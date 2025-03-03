@@ -1,0 +1,1 @@
+export const springBoot = 'http://localhost:8080'

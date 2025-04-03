@@ -1,3 +1,9 @@
+![home](https://github.com/lauvAri/next-js-petstore/blob/main/resource/home.png)
+![main](https://github.com/lauvAri/next-js-petstore/blob/main/resource/main.png)
+![product](https://github.com/lauvAri/next-js-petstore/blob/main/resource/product.png)
+![category](https://github.com/lauvAri/next-js-petstore/blob/main/resource/category.png)
+![item](https://github.com/lauvAri/next-js-petstore/blob/main/resource/item.png)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

@@ -1,5 +1,6 @@
 import Header from "@/app/common/header";
 import Footer from "@/app/common/footer";
+import Link from "next/link";
 export default async function Category({ params }:
     {
         params: Promise<{ id: string }>
@@ -25,7 +26,7 @@ export default async function Category({ params }:
                         {productList.map((product:Product) => (
                             <tr key={product.productId}>
                                 <td className="border-2 p-2 bg-yellow-50">{product.name}</td>
-                                <td className="underline border-2 p-2 bg-yellow-50"><a href={`/product/${product.productId}`}>{product.productId}</a></td>
+                                <td className="underline border-2 p-2 bg-yellow-50"><Link href={`/product/${product.productId}`}>{product.productId}</Link></td>
                                 <td className="border-2 p-2 bg-yellow-50">{product.categoryId}</td>
                             </tr>
                         ))}

@@ -6,7 +6,7 @@ export default function Header() {
     return (
         <div className="bg-black flex justify-between items-center h-fit">
             <div className="ml-12">
-                <Link href="/"><Icon className="text-white" path={ mdiPaw} size={5}></Icon></Link>
+                <Link href="/main"><Icon className="text-white" path={ mdiPaw} size={5}></Icon></Link>
             </div>
             <div className="flex gap-4 text-white">
                 <Link href="/cart"><Icon path={ mdiCart} size={1}></Icon></Link>

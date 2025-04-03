@@ -1,7 +1,9 @@
 "use client"
 
 import { springBoot } from "@/app/config";
+import { useRouter } from "next/navigation";
 export default function LogIn() {
+    const router = useRouter();
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -18,7 +20,7 @@ export default function LogIn() {
             credentials: 'include'  // 确保携带Cookie
         })
         if (resp.ok) {
-            window.location.href = "/main";
+            router.push('/main');
             return;
         } else {
              window.alert("用户名或密码错误");

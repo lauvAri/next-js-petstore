@@ -1,6 +1,6 @@
 "use client"
 
-import { springBoot } from "../config";
+import { springBoot } from "../../config";
 
 export default function Register() {
     async function handleSubmit(e: any) {

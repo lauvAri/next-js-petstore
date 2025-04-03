@@ -2,6 +2,7 @@ import Footer from "@/app/common/footer"
 import Header from "@/app/common/header"
 import { springBoot } from "@/app/config"
 import { parseDescription} from "@/app/utils"
+import Link from "next/link"
 export default async function Product({ params }: {
     params: Promise<{ id: string }>
 }) {
@@ -29,7 +30,7 @@ export default async function Product({ params }: {
                         {itemList.map((item: item) => (
                             <tr key={item.itemId}>
                                 <td className="border-2 p-2 bg-yellow-50">{item.product.name}</td>
-                                <td className="underline border-2 p-2 bg-yellow-50"><a href={`/item/${item.itemId}`}>{item.itemId}</a></td>
+                                <td className="underline border-2 p-2 bg-yellow-50"><Link href={`/item/${item.itemId}`}>{item.itemId}</Link></td>
                                 <td className="border-2 p-2 bg-yellow-50">{item.listPrice}</td>
                                 <td className="border-2 p-2 bg-yellow-50">{item.attribute1}</td>
                                 <td className="border-2 p-2 bg-yellow-50"><img src={ "/" + image} alt="图片" /></td>

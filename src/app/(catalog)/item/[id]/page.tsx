@@ -2,8 +2,11 @@ import Footer from "@/app/common/footer";
 import Header from "@/app/common/header";
 import { springBoot } from "@/app/config";
 import { parseDescription } from "@/app/utils";
-export default async function Item({ params }: { params: { id: string } }) {
-    const { item } = await getData(params.id);
+
+
+export default async function Item({ params }: { params:Promise<{id:string}>}) {
+    const id = (await params).id;
+    const { item } = await getData(id);
     const { image, text } = parseDescription(item.product.description)
     return (
         <div className="flex flex-col h-screen">

@@ -2,6 +2,7 @@ import Footer from "@/app/common/footer";
 import Header from "@/app/common/header";
 import { springBoot } from "@/app/config";
 import { parseDescription } from "@/app/utils";
+import Link from "next/link";
 
 
 export default async function Search({ params }: {
@@ -27,7 +28,7 @@ export default async function Search({ params }: {
                             <div className="w-60">
                                 <p className="text-xl font-bold">{item.name}</p>
                                 <p className="underline text-blue-500">
-                                    <a href={`/product/${item.productId}`}>{item.productId}</a>
+                                    <Link href={`/product/${item.productId}`}>{item.productId}</Link>
                                 </p>
                                 <p>{item.categoryId}</p>
                                 <p className="truncate">{parseDescription(item.description).text }</p>

@@ -23,13 +23,12 @@ function isSignIn() {
     if (true) {
         return (
             <>
-                <Link href="logout">Sign Out</Link>
-                <Link href="changePassword">Change Password</Link>
-                <Link href="myAcount">My Account</Link>
+                <Link href="/logout">Sign Out</Link>
+                <Link href="/profile">My Profile</Link>
             </>
         )
     }
     return (
-        <Link href="registrationView">Sign In</Link>
+        <Link href="/login">Sign In</Link>
     )
 }

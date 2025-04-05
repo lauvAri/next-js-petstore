@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import axios from 'axios';
 import { redirect } from 'next/navigation'; // 服务端使用redirect, 客户端使用useRouter
+import { cookies } from 'next/headers';
 
 const clientID = process.env.AUTH_GITEE_ID;
 const clientSecret = process.env.AUTH_GITEE_SECRET;
@@ -32,5 +33,7 @@ export async function GET(request: NextRequest) {
   const res = await fetch(openapi);
   const data = await res.json();
   const name = data.name;
-  redirect(`/main?username=${name}`)
+
+  (await cookies()).set('username', name);
+  redirect(`/main`)
 }

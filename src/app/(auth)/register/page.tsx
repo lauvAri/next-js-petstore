@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef } from "react";
 import { springBoot } from "../../config";
 
 export default function Register() {
@@ -32,6 +33,68 @@ export default function Register() {
             window.alert("注册失败");
         }
     }
+
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const usernameWarning = useRef<HTMLParagraphElement>(null);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const emailWarning = useRef<HTMLParagraphElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+    const passwordWarning = useRef<HTMLParagraphElement>(null);
+    const rePasswordRef = useRef<HTMLInputElement>(null);
+    const rePasswordWarning = useRef<HTMLParagraphElement>(null);
+    const handleOnKeyUp = (option:number) => {
+      switch (option) {
+        case 0:
+            const username = usernameRef.current?.value as string;
+            console.log(username);
+            if (usernameWarning.current) {
+                if (username?.length < 4) {
+                    usernameWarning.current.style.display = 'block';
+                } else {
+                    usernameWarning.current.style.display = 'none';
+                }
+            }
+            break;
+        case 1:
+            const email = emailRef.current?.value as string;
+            console.log(email);
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailWarning.current) {
+              if (!emailPattern.test(email)) {
+                emailWarning.current.style.display = 'block';
+              } else {
+                 emailWarning.current.style.display = 'none';
+              }
+            }
+            break;
+        case 2:
+            const password = passwordRef.current?.value as string;
+            console.log(password);
+            if (passwordWarning.current) {
+                if (password?.length < 8) {
+                    passwordWarning.current.style.display = 'block';
+                } else {
+                    passwordWarning.current.style.display = 'none';
+                }
+            }
+            break;
+        case 3:
+            const lastPassword = passwordRef.current?.value as string;
+            const rePassword = rePasswordRef.current?.value as string;
+            console.log(rePassword);
+            if (rePasswordWarning.current) {
+                if (rePassword !== lastPassword) {
+                  rePasswordWarning.current.style.display = 'block';
+                } else {
+                  rePasswordWarning.current.style.display = 'none';
+                }
+            }
+            break;
+        default:
+           return;
+      }
+
+    }
     return (
         <div className="bg-linear-to-r/srgb from-indigo-500 to-teal-400
             h-screen w-screen flex flex-col justify-center items-center">
@@ -52,26 +115,38 @@ export default function Register() {
                         <div>
                             <label htmlFor="username">Username</label>
                             <br />
-                            <input type="text" id="username" name="username" required
-                                className="p-2 border-2 border-black rounded-md"/>
+                            <input type="text" id="username" name="username" required ref={usernameRef}
+                                className="p-2 border-2 border-black rounded-md" onKeyUp={()=>handleOnKeyUp(0)}/>
+                            <p style={{display:'none', color:'red'}} ref={usernameWarning}>
+                              username must be at least 4 characters</p>
                         </div>
                         <div>
                             <label htmlFor="email">Email</label>
                             <br />
                             <input type="email" id="email" name="email" required
-                                className="p-2 border-2 border-black rounded-md"/>
+                                className="p-2 border-2 border-black rounded-md"
+                                ref={emailRef} onKeyUp={()=>handleOnKeyUp(1)}/>
+                            <p style={{display:'none', color:'red'}} ref={emailWarning}>
+                              please enter valid email</p>
                         </div>
                         <div>
                             <label htmlFor="password">Password</label>
                             <br />
                             <input type="password" id="password" name="password" required
-                                className="p-2 border-2 border-black rounded-md"/>
+                                className="p-2 border-2 border-black rounded-md"
+                                ref={passwordRef} onKeyUp={()=>handleOnKeyUp(2)}/>
+                            <p style={{display:'none', color:'red'}} ref={passwordWarning}>
+                              password must be at least 8 characters</p>
                         </div>
                         <div>
                             <label htmlFor="repeat-password">Repeat password</label>
                             <br />
                             <input type="password" id="repeat-password" name="repeat-password" required
-                                className="p-2 border-2 border-black rounded-md"/>
+                                className="p-2 border-2 border-black rounded-md"
+                                ref={rePasswordRef} onKeyUp={()=>handleOnKeyUp(3)}
+                                />
+                            <p style={{display:'none', color:'red'}} ref={rePasswordWarning}>
+                              it shoule be exactly the same as the password</p>
                         </div>
                         <div>
                             <label htmlFor="favouriteCategoryId">favourite animals</label>

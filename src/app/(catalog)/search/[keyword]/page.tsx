@@ -1,19 +1,30 @@
+"use client";
 import Footer from "@/app/common/footer";
 import Header from "@/app/common/header";
 import { springBoot } from "@/app/config";
 import { parseDescription } from "@/app/utils";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 
-export default async function Search({ params }: {
-    params: Promise<{ keyword: string }>
-}) {
-    const keyword = (await params).keyword;
-    const { suggestion: productList } = await getData(keyword);
-    console.log(productList);
+export default function Search() {
+    const params = useParams();
+    const keyword = params.keyword as string;
+    const [productList, setProductList] = useState<Product[]>([]);
+    useEffect(()=> {
+        fetch(`${springBoot}/api/search?keyword=${keyword}`)
+        .then(res => res.json())
+        .then(nextData => {
+            setProductList(nextData.suggestion);
+        }).catch(err=> {
+          console.error(err);
+        })
+    }, [keyword]);
+    
     return (
         <div className="flex flex-col h-screen">
-            <Header></Header>
+            <Header />
             <div className="flex-1 self-center mt-4
              grid grid-cols-2 gap-2 justify-items-center
              auto-rows-min
@@ -38,7 +49,7 @@ export default async function Search({ params }: {
                     ))
                 }
             </div>
-            <Footer></Footer>
+            <Footer />
         </div>
     )
 }
@@ -48,10 +59,4 @@ type Product = {
     name: string,
     categoryId: string,
     description: string,
-}
-
-async function getData(keyword: string) {
-    const res = await fetch(`${springBoot}/api/search?keyword=${keyword}`)
-    if (!res.ok) throw new Error("获取数据失败")
-    return res.json();
 }

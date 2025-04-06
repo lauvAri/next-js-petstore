@@ -21,7 +21,7 @@ export default function Header() {
       Cookies.remove('username');
       console.log('removed the username from cookie: ', Cookies.get('username'));
       setUsername(undefined);
-      //router.push('/login');
+      router.push('/login');
     }
 
     return (

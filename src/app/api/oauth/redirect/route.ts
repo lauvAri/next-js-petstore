@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
   //3. 获取用户数据
   const res = await fetch(openapi);
   const data = await res.json();
+  console.log(data);
   const name = data.name;
 
   (await cookies()).set('username', name);

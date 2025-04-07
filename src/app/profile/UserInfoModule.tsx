@@ -59,7 +59,7 @@ export default function UserInfoModule({
     try {
       const token = Cookies.get("token");
       if (!token) {
-        alert("未登录，请先登录");
+        alert("Not logged in, please log in first");
         return;
       }
   
@@ -76,28 +76,28 @@ export default function UserInfoModule({
         const updatedInfo = await response.json();
         setUserInfo(updatedInfo); // 更新本地显示数据
         setShowEditForm(false);
-        alert("信息修改成功！");
+        alert("😊Information modified successfully!");
       } else {
         const errorMsg = await response.text();
-        console.error("修改失败", errorMsg);
-        alert("信息修改失败：" + errorMsg);
+        console.error("Modification failed", errorMsg);
+        alert("😔Information modified failed" + errorMsg);
       }
     } catch (error) {
       console.error("Error updating user info:", error);
-      alert("信息修改失败，请稍后再试！");
+      alert("😔Information modification failed, please try again later!");
     }
   };
 
   // 密码修改
   const handlePasswordSubmit = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("两次输入的新密码不一致！");
+      alert("The new passwords entered twice are inconsistent!");
       return;
     }
   
     const currentToken = Cookies.get("token");
     if (!currentToken) {
-      alert("未登录，请先登录");
+      alert("Not logged in, please log in first");
       return;
     }
   
@@ -117,7 +117,7 @@ export default function UserInfoModule({
   
       if (!postResp.ok) {
         const msg = await postResp.text();
-        alert("原密码验证失败：" + msg);
+        alert("Original password verification failed:" + msg);
         return;
       }
   
@@ -142,20 +142,20 @@ export default function UserInfoModule({
           newPassword: "",
           confirmPassword: ""
         });
-        alert("密码修改成功！");
+        alert("Password changed successfully!");
       } else {
         const msg = await putResp.text();
-        alert("密码修改失败：" + msg);
+        alert("Password modification failed:" + msg);
       }
     } catch (error) {
       console.error("Error updating password:", error);
-      alert("密码更新失败，请稍后再试！");
+      alert("Password update failed, please try again later!");
     }
   };
   
 
   if (!userInfo) {
-    return <p>加载中...</p>;
+    return <p>loading...</p>;
   }
 
   return (
@@ -165,54 +165,54 @@ export default function UserInfoModule({
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <p className="text-sm text-gray-500">姓名</p>
+                <p className="text-sm text-gray-500">Name</p>
                 <p className="font-medium">{userInfo.firstName} {userInfo.lastName}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">邮箱</p>
+                <p className="text-sm text-gray-500">Mail</p>
                 <p className="font-medium">{userInfo.email}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">电话</p>
+                <p className="text-sm text-gray-500">Phone</p>
                 <p className="font-medium">{userInfo.phone}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">地址</p>
+                <p className="text-sm text-gray-500">Address</p>
                 <p className="font-medium">{userInfo.address1}</p>
                 {userInfo.address2 && <p className="font-medium">{userInfo.address2}</p>}
               </div>
               <div>
-                <p className="text-sm text-gray-500">城市</p>
+                <p className="text-sm text-gray-500">City</p>
                 <p className="font-medium">{userInfo.city}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">邮编</p>
+                <p className="text-sm text-gray-500">Post code</p>
                 <p className="font-medium">{userInfo.zip}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">国家</p>
+                <p className="text-sm text-gray-500">Country</p>
                 <p className="font-medium">{userInfo.country}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">语言偏好</p>
-                <p className="font-medium">{userInfo.langPref === "zh_CN" ? "中文" : userInfo.langPref}</p>
+               <p className="text-sm text-gray-500">Language preference</p>
+               <p className="font-medium">{userInfo.langPref === "zh_CN" ? "Chinese" : userInfo.langPref}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">喜爱分类</p>
-                <p className="font-medium">
-                  {userInfo.favCategory === "FISH" ? "鱼类" : 
-                   userInfo.favCategory === "DOGS" ? "狗类" : 
-                   userInfo.favCategory === "CATS" ? "猫类" : 
-                   userInfo.favCategory === "REPTILES" ? "爬行动物" : 
-                   userInfo.favCategory === "BIRDS" ? "鸟类" : 
-                   userInfo.favCategory}
-                </p>
+               <p className="text-sm text-gray-500">Favorite categories</p>
+               <p className="font-medium">
+               {userInfo.favCategory === "FISH" ? "Fish" : 
+                userInfo.favCategory === "DOGS" ? "Dogs" : 
+                userInfo.favCategory === "CATS" ? "Cats" : 
+                userInfo.favCategory === "REPTILES" ? "Reptiles" : 
+                userInfo.favCategory === "BIRDS" ? "Birds" : 
+                userInfo.favCategory}
+              </p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">通知选项</p>
+                <p className="text-sm text-gray-500">Notification options</p>
                 <p className="font-medium">
-                  {userInfo.mylistOpt ? "接收清单更新" : "不接收清单更新"}，
-                  {userInfo.bannerOpt ? "显示横幅" : "不显示横幅"}
+                {userInfo.mylistOpt ? "Receive list updates" : "Do not receive list updates"},
+                {userInfo.bannerOpt ? "Show banners" : "Do not show banners"}
                 </p>
               </div>
             </div>
@@ -220,20 +220,20 @@ export default function UserInfoModule({
               <Button
                 onClick={() => setShowEditForm(true)}
               >
-                修改个人信息
+                Modify personal information
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowPasswordForm(true)}
               >
-                修改密码
+                Change password
               </Button>
             </div>
           </>
         ) : showEditForm ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="firstName">名字</Label>
+              <Label htmlFor="firstName">firstName</Label>
               <Input
                 id="firstName"
                 type="text"
@@ -242,7 +242,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName">姓氏</Label>
+              <Label htmlFor="lastName">lastName</Label>
               <Input
                 id="lastName"
                 type="text"
@@ -251,7 +251,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
+              <Label htmlFor="email">email</Label>
               <Input
                 id="email"
                 type="email"
@@ -260,7 +260,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">电话</Label>
+              <Label htmlFor="phone">phone</Label>
               <Input
                 id="phone"
                 type="text"
@@ -269,7 +269,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address1">地址1</Label>
+              <Label htmlFor="address1">address1</Label>
               <Input
                 id="address1"
                 type="text"
@@ -278,7 +278,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address2">地址2（可选）</Label>
+              <Label htmlFor="address2">address2</Label>
               <Input
                 id="address2"
                 type="text"
@@ -287,7 +287,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="city">城市</Label>
+              <Label htmlFor="city">city</Label>
               <Input
                 id="city"
                 type="text"
@@ -296,7 +296,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="zip">邮编</Label>
+              <Label htmlFor="zip">zip</Label>
               <Input
                 id="zip"
                 type="text"
@@ -305,7 +305,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="country">国家</Label>
+              <Label htmlFor="country">country</Label>
               <Input
                 id="country"
                 type="text"
@@ -314,32 +314,32 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="langPref">语言偏好</Label>
+              <Label htmlFor="langPref">langPref</Label>
               <select 
                 id="langPref"
                 className="w-full p-2 border rounded"
                 value={formData.langPref} 
                 onChange={(e) => setFormData({ ...formData, langPref: e.target.value })}
               >
-                <option value="">选择语言</option>
-                <option value="zh_CN">中文</option>
-                <option value="en_US">英文</option>
+                <option value="">choose language</option>
+                <option value="zh_CN">zh_CN</option>
+                <option value="en_US">en_US</option>
               </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="favCategory">喜爱分类</Label>
+              <Label htmlFor="favCategory">favCategory</Label>
               <select 
                 id="favCategory"
                 className="w-full p-2 border rounded"
                 value={formData.favCategory} 
                 onChange={(e) => setFormData({ ...formData, favCategory: e.target.value })}
               >
-                <option value="">选择分类</option>
-                <option value="FISH">鱼类</option>
-                <option value="DOGS">狗类</option>
-                <option value="CATS">猫类</option>
-                <option value="REPTILES">爬行动物</option>
-                <option value="BIRDS">鸟类</option>
+                <option value="">choose Category</option>
+                <option value="FISH">FISH</option>
+                <option value="DOGS">DOGS</option>
+                <option value="CATS">CATS</option>
+                <option value="REPTILES">REPTILES</option>
+                <option value="BIRDS">BIRDS</option>
               </select>
             </div>
             <div className="col-span-2 space-y-4 mt-2">
@@ -350,7 +350,7 @@ export default function UserInfoModule({
                   checked={formData.mylistOpt}
                   onChange={(e) => setFormData({ ...formData, mylistOpt: e.target.checked })}
                 />
-                <Label htmlFor="mylistOpt">接收清单更新通知</Label>
+                <Label htmlFor="mylistOpt">mylistOpt</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <input 
@@ -359,27 +359,27 @@ export default function UserInfoModule({
                   checked={formData.bannerOpt}
                   onChange={(e) => setFormData({ ...formData, bannerOpt: e.target.checked })}
                 />
-                <Label htmlFor="bannerOpt">显示banner</Label>
+                <Label htmlFor="bannerOpt">bannerOpt</Label>
               </div>
             </div>
             <div className="col-span-2 flex gap-4 mt-4">
               <Button
                 onClick={handleEditSubmit}
               >
-                保存信息
+                save information
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowEditForm(false)}
               >
-                取消
+                cancel
               </Button>
             </div>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="oldPassword">当前密码</Label>
+              <Label htmlFor="oldPassword">current password</Label>
               <Input
                 id="oldPassword"
                 type="password"
@@ -388,7 +388,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="newPassword">新密码</Label>
+              <Label htmlFor="newPassword">new password</Label>
               <Input
                 id="newPassword"
                 type="password"
@@ -397,7 +397,7 @@ export default function UserInfoModule({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">确认新密码</Label>
+              <Label htmlFor="confirmPassword">confirm password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -409,7 +409,7 @@ export default function UserInfoModule({
               <Button
                 onClick={handlePasswordSubmit}
               >
-                修改密码
+                change password
               </Button>
               <Button
                 variant="outline"
@@ -422,7 +422,7 @@ export default function UserInfoModule({
                   });
                 }}
               >
-                取消
+                cancel
               </Button>
             </div>
           </div>

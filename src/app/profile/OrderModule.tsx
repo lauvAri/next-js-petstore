@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// 定义订单项的类型
+// Define the type for the order item
 interface OrderItem {
   id: string;
   status: string;
@@ -24,13 +24,13 @@ export default function OrdersModule() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 拉取订单数据
+  // Fetch order data
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const token = Cookies.get("token");
         if (!token) {
-          setError("未登录，请先登录！");
+          setError("Not logged in. Please log in first.");
           setLoading(false);
           return;
         }
@@ -50,7 +50,7 @@ export default function OrdersModule() {
         const data = await response.json();
         setOrders(data);
       } catch (err: any) {
-        setError(err.message || "获取订单失败");
+        setError(err.message || "Failed to fetch orders.");
       } finally {
         setLoading(false);
       }
@@ -59,19 +59,15 @@ export default function OrdersModule() {
     fetchOrders();
   }, []);
 
-  // 获取订单状态的样式
+  // Get order status style
   const getStatusStyle = (status: string) => {
     switch (status.toLowerCase()) {
-      case "已完成":
       case "completed":
         return "text-green-600 bg-green-100 px-2 py-1 rounded";
-      case "待发货":
       case "pending":
         return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded";
-      case "运输中":
       case "shipping":
         return "text-blue-600 bg-blue-100 px-2 py-1 rounded";
-      case "已取消":
       case "cancelled":
         return "text-red-600 bg-red-100 px-2 py-1 rounded";
       default:
@@ -79,9 +75,9 @@ export default function OrdersModule() {
     }
   };
 
-  if (loading) return <p>订单加载中...</p>;
+  if (loading) return <p>Loading orders...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (!orders.length) return <p>暂无订单。</p>;
+  if (!orders.length) return <p>No orders available.</p>;
 
   return (
     <div className="grid gap-4">
@@ -91,9 +87,9 @@ export default function OrdersModule() {
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-bold">订单号: {order.id}</h3>
+                  <h3 className="font-bold">Order ID: {order.id}</h3>
                   {order.date && (
-                    <p className="text-sm text-gray-500">日期: {order.date}</p>
+                    <p className="text-sm text-gray-500">Date: {order.date}</p>
                   )}
                 </div>
                 <span className={getStatusStyle(order.status)}>
@@ -103,7 +99,7 @@ export default function OrdersModule() {
 
               {order.items && order.items.length > 0 && (
                 <div className="mt-4">
-                  <h4 className="font-medium mb-2">订单商品</h4>
+                  <h4 className="font-medium mb-2">Order Items</h4>
                   <div className="space-y-2">
                     {order.items.map((item, index) => (
                       <div key={index} className="flex justify-between">
@@ -119,18 +115,18 @@ export default function OrdersModule() {
 
               {order.total && (
                 <div className="flex justify-between font-bold mt-2">
-                  <span>总计</span>
+                  <span>Total</span>
                   <span>¥{order.total.toFixed(2)}</span>
                 </div>
               )}
 
               <div className="flex gap-2 mt-4">
-                <Button>查看详情</Button>
-                {["待发货", "pending"].includes(order.status.toLowerCase()) && (
-                  <Button variant="outline">取消订单</Button>
+                <Button>View Details</Button>
+                {["pending"].includes(order.status.toLowerCase()) && (
+                  <Button variant="outline">Cancel Order</Button>
                 )}
-                {["已完成", "completed"].includes(order.status.toLowerCase()) && (
-                  <Button variant="outline">申请退货</Button>
+                {["completed"].includes(order.status.toLowerCase()) && (
+                  <Button variant="outline">Request Return</Button>
                 )}
               </div>
             </div>

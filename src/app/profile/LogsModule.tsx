@@ -5,12 +5,12 @@ import { backendUrl } from "@/app/config";
 import Cookies from "js-cookie";
 import { Card, CardContent } from "@/components/ui/card";
 
-// 定义日志项的类型
+// Define the type for the log item
 interface LogItem {
-  message: string;
-  timestamp: string;
-  type?: string;
-  details?: string;
+  userId: string;
+  description: string;
+  date: string;
+  color: string;
 }
 
 export default function LogsModule() {
@@ -23,7 +23,7 @@ export default function LogsModule() {
       try {
         const token = Cookies.get("token");
         if (!token) {
-          setError("未登录，请先登录！");
+          setError("Not logged in. Please log in first.");
           setLoading(false);
           return;
         }
@@ -44,7 +44,7 @@ export default function LogsModule() {
         const data = await response.json();
         setLogs(data);
       } catch (err: any) {
-        setError(err.message || "获取日志失败");
+        setError(err.message || "Failed to fetch logs.");
       } finally {
         setLoading(false);
       }
@@ -53,55 +53,37 @@ export default function LogsModule() {
     fetchLogs();
   }, []);
 
-  const getLogTypeStyle = (type?: string) => {
-    if (!type) return "";
-
-    switch (type.toLowerCase()) {
-      case "login":
-      case "登录":
+  const getLogTypeStyle = (color: string) => {
+    switch (color.toLowerCase()) {
+      case "blue":
         return "border-l-4 border-blue-500";
-      case "order":
-      case "订单":
+      case "green":
         return "border-l-4 border-green-500";
-      case "update":
-      case "更新":
+      case "yellow":
         return "border-l-4 border-yellow-500";
-      case "error":
-      case "错误":
+      case "red":
         return "border-l-4 border-red-500";
       default:
         return "";
     }
   };
 
-  if (loading) return <p>日志加载中...</p>;
+  if (loading) return <p>Loading logs...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (!logs.length) return <p>暂无日志。</p>;
+  if (!logs.length) return <p>No logs available.</p>;
 
   return (
     <div className="space-y-4">
-      {logs.map((log, index) => {
-        let logType = log.type;
-        if (!logType) {
-          if (log.message.includes("登录")) logType = "login";
-          else if (log.message.includes("订单")) logType = "order";
-          else if (log.message.includes("修改")) logType = "update";
-        }
-
-        return (
-          <Card key={index} className={getLogTypeStyle(logType)}>
-            <CardContent className="p-4">
-              <div className="flex flex-col gap-1">
-                <p className="font-medium">{log.message}</p>
-                <p className="text-sm text-gray-500">{log.timestamp}</p>
-                {log.details && (
-                  <p className="text-sm mt-2 text-gray-600">{log.details}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        );
-      })}
+      {logs.map((log, index) => (
+        <Card key={index} className={getLogTypeStyle(log.color)}>
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-1">
+              <p className="font-medium">{log.description}</p>
+              <p className="text-sm text-gray-500">{log.date}</p>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

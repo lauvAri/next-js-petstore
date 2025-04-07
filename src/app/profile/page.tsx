@@ -10,8 +10,7 @@ import UserInfoModule from "./UserInfoModule";
 import OrdersModule from "./OrderModule";
 import LogsModule from "./LogsModule";
 
-
-// 定义用户信息的类型
+// Define the type for user information
 interface UserInfo {
   firstName: string;
   lastName: string;
@@ -30,7 +29,7 @@ interface UserInfo {
 
 export default function Profile() {
   const [activeModule, setActiveModule] = useState("info");
-  // 模拟用户信息数据
+  // Simulate user information data
   const [userInfo, setUserInfo] = useState<UserInfo | null>({
     firstName: "X",
     lastName: "X",
@@ -47,16 +46,16 @@ export default function Profile() {
     bannerOpt: false
   });
 
-  //api调用  显示用户信息
+  // API call to display user information
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const token = Cookies.get("token"); // 从 Cookie 获取 token
+        const token = Cookies.get("token"); // Get token from Cookie
         if (!token) {
-          alert("未登录或token不存在，请重新登录");
+          alert("Not logged in or token does not exist, please log in again.");
           return;
         }
-  
+
         const response = await fetch(`${backendUrl}/api/v1/account/me`, {
           method: "GET",
           headers: {
@@ -64,23 +63,23 @@ export default function Profile() {
             "Content-Type": "application/json"
           }
         });
-  
+
         if (response.ok) {
           const data = await response.json();
-          console.log("获取的用户信息：", data);
-          setUserInfo(data); // 设置到 state 中
+          console.log("Fetched user info:", data);
+          setUserInfo(data); // Set the state with fetched data
         } else if (response.status === 401) {
-          alert("未授权或登录已过期，请重新登录");
+          alert("Unauthorized or login has expired, please log in again.");
         } else {
-          alert("获取用户信息失败");
+          alert("Failed to fetch user information.");
           console.error("Error response:", await response.text());
         }
       } catch (error) {
-        console.error("请求错误:", error);
-        alert("网络错误，请稍后再试");
+        console.error("Request error:", error);
+        alert("Network error, please try again later.");
       }
     };
-  
+
     fetchUserInfo();
   }, []);
 
@@ -88,10 +87,10 @@ export default function Profile() {
     switch (activeModule) {
       case "info":
         return <UserInfoModule userInfo={userInfo} setUserInfo={setUserInfo} />;
-        case "orders":
-          return <OrdersModule />;
+      case "orders":
+        return <OrdersModule />;
       case "logs":
-        return <LogsModule />; 
+        return <LogsModule />;
       default:
         return <UserInfoModule userInfo={userInfo} setUserInfo={setUserInfo} />;
     }
@@ -111,7 +110,7 @@ export default function Profile() {
               }`}
               onClick={() => setActiveModule("info")}
             >
-              个人信息
+              Profile
             </button>
             <button
               className={`px-4 py-2 rounded ${
@@ -121,7 +120,7 @@ export default function Profile() {
               }`}
               onClick={() => setActiveModule("orders")}
             >
-              我的订单
+              Orders
             </button>
             <button
               className={`px-4 py-2 rounded ${
@@ -131,7 +130,7 @@ export default function Profile() {
               }`}
               onClick={() => setActiveModule("logs")}
             >
-              活动日志
+              Logs
             </button>
           </div>
           <div>{renderModule()}</div>

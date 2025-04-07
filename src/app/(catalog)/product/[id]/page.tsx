@@ -1,21 +1,15 @@
 "use client";
-import Footer from "@/app/common/footer"
-import Header from "@/app/common/header"
-import { springBoot, backendUrl } from "@/app/config"
-import { parseDescription} from "@/app/utils"
-import Link from "next/link"
+import Footer from "@/app/common/footer";
+import Header from "@/app/common/header";
+import { backendUrl } from "@/app/config";
+import { parseDescription } from "@/app/utils";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import toast, { Toaster } from 'react-hot-toast';
-export default function Product({ params }: {
-    params: Promise<{ id: string }>
-}) {
+import { handleAddToCart } from "@/app/actions";
+export default function Product() {
     const {id} = useParams();
-    // const id = params.then(p => p.id);
-    // const data = fetch(`${backendUrl}/catalog/product/${id}`).then(res => res.json())
-    // const { itemList, productName, description} = ;
-    // const {image, text} = parseDescription(description);
     const [itemList, setItemList] = useState<item[]>([]);
     const [productName, setProductName] = useState<string>('');
     const [image, setImage] = useState<string>('');
@@ -34,27 +28,6 @@ export default function Product({ params }: {
         toast(`Our system is under maintaining now. You can try latter.`);
       })
     }, []);
-    const handleAddToCart =  (id:string) => {
-        fetch(`${backendUrl}/carts/${id}`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${Cookies.get("token")}`
-          },
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === 0) {
-            toast(`😉successfully added ${id} to your cart!`);
-          } else {
-            toast(`😒we are sorry that ${data.message}`);
-          }
-        })
-        .catch(error => {
-          console.error("请求加入购物车失败", error);
-          alert("请求加入购物车失败");
-        })
-
-    }
     return (
         <div className="flex flex-col h-screen">
             <Toaster />
@@ -104,13 +77,4 @@ type item = {
     status: string,
     attribute1: string,
     modifying: number,
-}
-
-
-
-
-async function getData(id: string) {
-    const res = await fetch(`${backendUrl}/catalog/product/${id}`)
-    if (!res.ok) throw new Error("获取数据失败")
-    return res.json();
 }

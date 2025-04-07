@@ -1,4 +1,8 @@
-// LogsModule.tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import { backendUrl } from "@/app/config";
+import Cookies from "js-cookie";
 import { Card, CardContent } from "@/components/ui/card";
 
 // 定义日志项的类型
@@ -9,11 +13,49 @@ interface LogItem {
   details?: string;
 }
 
-export default function LogsModule({ logs }: { logs: LogItem[] }) {
-  // 获取日志类型的样式
+export default function LogsModule() {
+  const [logs, setLogs] = useState<LogItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const token = Cookies.get("token");
+        if (!token) {
+          setError("未登录，请先登录！");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${backendUrl}/api/v1/account/me/myJournal`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          const msg = await response.text();
+          throw new Error(msg);
+        }
+
+        const data = await response.json();
+        setLogs(data);
+      } catch (err: any) {
+        setError(err.message || "获取日志失败");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLogs();
+  }, []);
+
   const getLogTypeStyle = (type?: string) => {
     if (!type) return "";
-    
+
     switch (type.toLowerCase()) {
       case "login":
       case "登录":
@@ -32,21 +74,20 @@ export default function LogsModule({ logs }: { logs: LogItem[] }) {
     }
   };
 
-  if (!logs.length) {
-    return <p>暂无日志。</p>;
-  }
+  if (loading) return <p>日志加载中...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!logs.length) return <p>暂无日志。</p>;
 
   return (
     <div className="space-y-4">
       {logs.map((log, index) => {
-        // 提取日志类型
         let logType = log.type;
         if (!logType) {
           if (log.message.includes("登录")) logType = "login";
           else if (log.message.includes("订单")) logType = "order";
           else if (log.message.includes("修改")) logType = "update";
         }
-        
+
         return (
           <Card key={index} className={getLogTypeStyle(logType)}>
             <CardContent className="p-4">

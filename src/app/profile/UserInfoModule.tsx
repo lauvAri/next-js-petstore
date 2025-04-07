@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import Cookies from "js-cookie";
 
 // 定义用户信息的类型
 interface UserInfo {
@@ -53,57 +54,105 @@ export default function UserInfoModule({
     newPassword: "",
     confirmPassword: ""
   });
-
-  // 模拟信息更新提交
+  //信息更新提交
   const handleEditSubmit = async () => {
     try {
-      // 模拟API调用
-      console.log("将来这里会调用API: PUT", `${backendUrl}/api/v1/account/me/info`);
-      console.log("表单数据:", formData);
-      
-      // 更新前端状态
-      setUserInfo(formData);
-      setShowEditForm(false);
-      alert("信息修改成功！(模拟)");
+      const token = Cookies.get("token");
+      if (!token) {
+        alert("未登录，请先登录");
+        return;
+      }
+  
+      const response = await fetch(`${backendUrl}/api/v1/account/me/info`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+  
+      if (response.ok) {
+        const updatedInfo = await response.json();
+        setUserInfo(updatedInfo); // 更新本地显示数据
+        setShowEditForm(false);
+        alert("信息修改成功！");
+      } else {
+        const errorMsg = await response.text();
+        console.error("修改失败", errorMsg);
+        alert("信息修改失败：" + errorMsg);
+      }
     } catch (error) {
       console.error("Error updating user info:", error);
       alert("信息修改失败，请稍后再试！");
     }
   };
 
-  // 模拟密码修改
+  // 密码修改
   const handlePasswordSubmit = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       alert("两次输入的新密码不一致！");
       return;
     }
-    
+  
+    const currentToken = Cookies.get("token");
+    if (!currentToken) {
+      alert("未登录，请先登录");
+      return;
+    }
+  
     try {
-      // 模拟验证阶段
-      console.log("将来这里会调用API: POST", `${backendUrl}/api/v1/auth/resetPsw`);
-      console.log("密码数据:", {
-        oldPassword: passwordData.oldPassword,
-        newPassword: passwordData.newPassword
+      // 第一步：POST oldPassword + newPassword（验证原密码）
+      const postResp = await fetch(`${backendUrl}/api/v1/auth/resetPsw`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${currentToken}`
+        },
+        body: JSON.stringify({
+          oldPassword: passwordData.oldPassword,
+          newPassword: passwordData.newPassword
+        })
       });
-      
-      // 模拟处理阶段
-      console.log("将来这里会调用API: PUT", `${backendUrl}/api/v1/auth/resetPsw`);
-      console.log("新密码:", {
-        newPassword: passwordData.newPassword
+  
+      if (!postResp.ok) {
+        const msg = await postResp.text();
+        alert("原密码验证失败：" + msg);
+        return;
+      }
+  
+      // 第二步：PUT newPassword（正式修改）
+      const tempToken = await postResp.text(); // 假设返回的是 token 字符串
+  
+      const putResp = await fetch(`${backendUrl}/api/v1/auth/resetPsw`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${tempToken}`
+        },
+        body: JSON.stringify({
+          newPassword: passwordData.newPassword
+        })
       });
-      
-      setShowPasswordForm(false);
-      setPasswordData({
-        oldPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-      });
-      alert("密码修改成功！(模拟)");
+  
+      if (putResp.ok) {
+        setShowPasswordForm(false);
+        setPasswordData({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: ""
+        });
+        alert("密码修改成功！");
+      } else {
+        const msg = await putResp.text();
+        alert("密码修改失败：" + msg);
+      }
     } catch (error) {
       console.error("Error updating password:", error);
       alert("密码更新失败，请稍后再试！");
     }
   };
+  
 
   if (!userInfo) {
     return <p>加载中...</p>;
@@ -310,7 +359,7 @@ export default function UserInfoModule({
                   checked={formData.bannerOpt}
                   onChange={(e) => setFormData({ ...formData, bannerOpt: e.target.checked })}
                 />
-                <Label htmlFor="bannerOpt">显示横幅</Label>
+                <Label htmlFor="bannerOpt">显示banner</Label>
               </div>
             </div>
             <div className="col-span-2 flex gap-4 mt-4">

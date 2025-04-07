@@ -1,13 +1,15 @@
-// Profile.tsx
+// page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { backendUrl } from "@/app/config";
+import Cookies from "js-cookie";
 import Header from "@/app/common/header";
 import Footer from "@/app/common/footer";
 import UserInfoModule from "./UserInfoModule";
 import OrdersModule from "./OrderModule";
 import LogsModule from "./LogsModule";
+
 
 // 定义用户信息的类型
 interface UserInfo {
@@ -30,86 +32,66 @@ export default function Profile() {
   const [activeModule, setActiveModule] = useState("info");
   // 模拟用户信息数据
   const [userInfo, setUserInfo] = useState<UserInfo | null>({
-    firstName: "张",
-    lastName: "三",
-    email: "zhangsan@example.com",
-    phone: "13800138000",
-    address1: "北京市海淀区",
+    firstName: "X",
+    lastName: "X",
+    email: "xxx@example.com",
+    phone: "xxxxxxxxx",
+    address1: "xxxxxxx",
     address2: "",
-    city: "北京",
-    zip: "100000",
-    country: "中国",
-    langPref: "zh_CN",
-    favCategory: "CATS",
+    city: "xx",
+    zip: "xxxxxx",
+    country: "xx",
+    langPref: "xx",
+    favCategory: "xxx",
     mylistOpt: true,
     bannerOpt: false
   });
-  // 模拟订单数据
-  const [orders, setOrders] = useState([
-    {
-      id: "ORD20240101001",
-      status: "已完成",
-      date: "2024-01-01",
-      total: 299.00,
-      items: [
-        {name: "猫粮", quantity: 2, price: 99.50},
-        {name: "猫玩具", quantity: 1, price: 100.00}
-      ]
-    },
-    {
-      id: "ORD20240102002",
-      status: "待发货",
-      date: "2024-01-02",
-      total: 149.90,
-      items: [
-        {name: "猫砂", quantity: 1, price: 149.90}
-      ]
-    },
-    {
-      id: "ORD20240103003",
-      status: "运输中",
-      date: "2024-01-03",
-      total: 59.90,
-      items: [
-        {name: "猫咪零食", quantity: 2, price: 29.95}
-      ]
-    }
-  ]);
-  // 模拟日志数据
-  const [logs, setLogs] = useState([
-    {
-      message: "登录系统",
-      timestamp: "2024-01-01 08:30:00",
-      type: "login"
-    },
-    {
-      message: "修改个人信息",
-      timestamp: "2024-01-01 09:15:00",
-      type: "update"
-    },
-    {
-      message: "提交订单 ORD20240101001",
-      timestamp: "2024-01-01 10:00:00",
-      type: "order",
-      details: "购买了猫粮和猫玩具"
-    }
-  ]);
 
-  // 模拟API调用 - 将在后期替换为实际API调用
+  //api调用  显示用户信息
   useEffect(() => {
-    // 这里将来会实现真正的API调用
-    // 目前使用模拟数据
-    console.log("将来这里会调用API: GET", `${backendUrl}/api/v1/account/me`);
+    const fetchUserInfo = async () => {
+      try {
+        const token = Cookies.get("token"); // 从 Cookie 获取 token
+        if (!token) {
+          alert("未登录或token不存在，请重新登录");
+          return;
+        }
+  
+        const response = await fetch(`${backendUrl}/api/v1/account/me`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log("获取的用户信息：", data);
+          setUserInfo(data); // 设置到 state 中
+        } else if (response.status === 401) {
+          alert("未授权或登录已过期，请重新登录");
+        } else {
+          alert("获取用户信息失败");
+          console.error("Error response:", await response.text());
+        }
+      } catch (error) {
+        console.error("请求错误:", error);
+        alert("网络错误，请稍后再试");
+      }
+    };
+  
+    fetchUserInfo();
   }, []);
 
   const renderModule = () => {
     switch (activeModule) {
       case "info":
         return <UserInfoModule userInfo={userInfo} setUserInfo={setUserInfo} />;
-      case "orders":
-        return <OrdersModule orders={orders} />;
+        case "orders":
+          return <OrdersModule />;
       case "logs":
-        return <LogsModule logs={logs} />;
+        return <LogsModule />; 
       default:
         return <UserInfoModule userInfo={userInfo} setUserInfo={setUserInfo} />;
     }

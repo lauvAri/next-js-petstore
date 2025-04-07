@@ -1,6 +1,7 @@
 import Header from "@/app/common/header";
 import Footer from "@/app/common/footer";
 import Link from "next/link";
+import { backendUrl } from "@/app/config";
 export default async function Category({ params }:
     {
         params: Promise<{ id: string }>
@@ -49,7 +50,7 @@ type Product = {
 
 
 async function getData(id: string) {
-    const res = await fetch(`http://localhost:8090/catalog/category/${id}`);
+    const res = await fetch(`${backendUrl}/catalog/category/${id}`);
     if (!res.ok) throw new Error("获取数据失败")
     return res.json();
 }

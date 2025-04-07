@@ -1,16 +1,63 @@
+"use client";
 import Footer from "@/app/common/footer"
 import Header from "@/app/common/header"
 import { springBoot, backendUrl } from "@/app/config"
 import { parseDescription} from "@/app/utils"
 import Link from "next/link"
-export default async function Product({ params }: {
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import toast, { Toaster } from 'react-hot-toast';
+export default function Product({ params }: {
     params: Promise<{ id: string }>
 }) {
-    const id = (await params).id;
-    const { itemList, productName, description} = await getData(id);
-    const {image, text} = parseDescription(description)
+    const {id} = useParams();
+    // const id = params.then(p => p.id);
+    // const data = fetch(`${backendUrl}/catalog/product/${id}`).then(res => res.json())
+    // const { itemList, productName, description} = ;
+    // const {image, text} = parseDescription(description);
+    const [itemList, setItemList] = useState<item[]>([]);
+    const [productName, setProductName] = useState<string>('');
+    const [image, setImage] = useState<string>('');
+    const [text, setText] = useState<string>('');
+    useEffect(()=>{
+      fetch(`${backendUrl}/catalog/product/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        setItemList(data.itemList);
+        setProductName(data.productName);
+        setImage(parseDescription(data.description).image);
+        setText(parseDescription(data.description).text);
+      })
+      .catch(error => {
+        console.error('获取数据失败', error);
+        toast(`Our system is under maintaining now. You can try latter.`);
+      })
+    }, []);
+    const handleAddToCart =  (id:string) => {
+        fetch(`${backendUrl}/carts/${id}`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${Cookies.get("token")}`
+          },
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 0) {
+            toast(`😉successfully added ${id} to your cart!`);
+          } else {
+            toast(`😒we are sorry that ${data.message}`);
+          }
+        })
+        .catch(error => {
+          console.error("请求加入购物车失败", error);
+          alert("请求加入购物车失败");
+        })
+
+    }
     return (
         <div className="flex flex-col h-screen">
+            <Toaster />
             <Header />
             <div className="flex-1 flex flex-col justify-center items-center">
                 <p className="font-bold mb-5 text-2xl italic">{ productName}</p>
@@ -36,7 +83,8 @@ export default async function Product({ params }: {
                                 <td className="border-2 p-2 bg-yellow-50"><img src={ `${backendUrl}` + image} alt="图片" width="60"/></td>
                                 <td className="border-2 p-2 bg-yellow-50">{text}</td>
                                 <td className="border-2 p-2 bg-yellow-50">
-                                    <button className="bg-black text-white p-2 rounded-lg font-bold cursor-pointer hover:bg-stone-600">Add to Cart</button>
+                                    <button className="bg-black text-white p-2 rounded-lg font-bold cursor-pointer hover:bg-stone-600"
+                                    onClick={() => handleAddToCart(item.itemId)}>Add to Cart</button>
                                 </td>
                             </tr>
                         ))}

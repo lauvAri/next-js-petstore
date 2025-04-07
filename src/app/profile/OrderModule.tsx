@@ -1,3 +1,4 @@
+// OrderModule.tsx
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -5,26 +6,92 @@ import { Button } from "@/components/ui/button";
 interface OrderItem {
   id: string;
   status: string;
+  date?: string;
+  total?: number;
+  items?: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
 }
 
 export default function OrdersModule({ orders }: { orders: OrderItem[] }) {
-  if (!orders.length) return <p>暂无订单。</p>;
+  // 获取订单状态的样式
+  const getStatusStyle = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "已完成":
+      case "completed":
+        return "text-green-600 bg-green-100 px-2 py-1 rounded";
+      case "待发货":
+      case "pending":
+        return "text-yellow-600 bg-yellow-100 px-2 py-1 rounded";
+      case "运输中":
+      case "shipping":
+        return "text-blue-600 bg-blue-100 px-2 py-1 rounded";
+      case "已取消":
+      case "cancelled":
+        return "text-red-600 bg-red-100 px-2 py-1 rounded";
+      default:
+        return "text-gray-600 bg-gray-100 px-2 py-1 rounded";
+    }
+  };
+
+  if (!orders.length) {
+    return <p>暂无订单。</p>;
+  }
 
   return (
     <div className="grid gap-4">
       {orders.map((order) => (
         <Card key={order.id}>
-          <CardContent>
+          <CardContent className="p-4">
             <div className="flex flex-col gap-2">
-              <p>
-                <strong>订单号:</strong> {order.id}
-              </p>
-              <p>
-                <strong>状态:</strong> {order.status}
-              </p>
-              <Button variant="default" className="mt-2">
-                申请退货
-              </Button>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold">订单号: {order.id}</h3>
+                  {order.date && <p className="text-sm text-gray-500">日期: {order.date}</p>}
+                </div>
+                <span className={getStatusStyle(order.status)}>
+                  {order.status}
+                </span>
+              </div>
+              
+              {order.items && order.items.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="font-medium mb-2">订单商品</h4>
+                  <div className="space-y-2">
+                    {order.items.map((item, index) => (
+                      <div key={index} className="flex justify-between">
+                        <span>{item.name} x {item.quantity}</span>
+                        <span>¥{item.price.toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {order.total && (
+                <div className="flex justify-between font-bold mt-2">
+                  <span>总计</span>
+                  <span>¥{order.total.toFixed(2)}</span>
+                </div>
+              )}
+              
+              <div className="flex gap-2 mt-4">
+                <Button>
+                  查看详情
+                </Button>
+                {["待发货", "pending"].includes(order.status.toLowerCase()) && (
+                  <Button variant="outline">
+                    取消订单
+                  </Button>
+                )}
+                {["已完成", "completed"].includes(order.status.toLowerCase()) && (
+                  <Button variant="outline">
+                    申请退货
+                  </Button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>

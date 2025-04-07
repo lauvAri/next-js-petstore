@@ -12,13 +12,26 @@ export default function Register() {
             password: formData.get("password"),
             email: formData.get("email"),
             favouriteCategoryId: formData.get("favouriteCategoryId"),
+
+            "firstName" : "xxx",
+            "lastName" : "xxx",
+            "phone" : "xxx",
+            "address1" : "xxx",
+            "address2" : "xxx",
+            "city" : "xxx",
+            "zip" : "xxx",
+            "state" : "xxx",
+            "country" : "xxx",
+            "languagePreference" : "xxx",
+            "listOption" : true,
+            "bannerOption" : false
         }
 
         if (data.password !== formData.get("repeat-password")) {
             window.alert("两次密码不一致");
             return;
         }
-        const resp = await fetch(`${springBoot}/api/register`, {
+        const resp = await fetch(`${springBoot}/api/v1/account`, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {

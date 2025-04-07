@@ -2,8 +2,10 @@
 
 import { useRef } from "react";
 import { springBoot } from "../../config";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+    const router = useRouter();
     async function handleSubmit(e: any) {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -40,8 +42,7 @@ export default function Register() {
         })
         if (resp.ok) {
             window.alert("注册成功");
-            window.location.href = "/login";
-            return;
+            router.push('/login');
         } else {
             window.alert("注册失败");
         }

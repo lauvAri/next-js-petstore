@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import axios from 'axios';
 import { redirect } from 'next/navigation'; // 服务端使用redirect, 客户端使用useRouter
 import { cookies } from 'next/headers';
+import { backendUrl } from '@/app/config';
 
 const clientID = process.env.AUTH_GITEE_ID;
 const clientSecret = process.env.AUTH_GITEE_SECRET;
@@ -34,7 +35,50 @@ export async function GET(request: NextRequest) {
   const data = await res.json();
   console.log(data);
   const name = data.name;
-
+  const email = data.email;
+  let token = '';
+  try {
+    token = await fetch(`${backendUrl}/api/v1/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "username": name,
+        "password": "gitee-oauth",
+      })
+    }).then(res => res.text());
+  } catch {
+    console.log("the user is not in the database");
+    token = await fetch(`${backendUrl}/api/v1/account`, {
+        method: "POST",
+        body: JSON.stringify({
+          "username" : name,
+          "password" : "gitee-oauth",
+          
+          "firstName" : "xxx",
+          "lastName" : "xxx",
+          "email" : email,
+          "phone" : "xxx",
+          "address1" : "xxx",
+          "address2" : "xxx",
+          "city" : "xxx",
+          "zip" : "xxx",
+          "state" : "xxx",
+          "country" : "xxx",
+          "languagePreference" : "xxx",
+          "favouriteCategoryId" : "dogs",
+          "listOption" : true,
+          "bannerOption" : true,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        }
+      })
+      .then(res => res.text());
+  }
+  
+  (await cookies()).set('token', token);
   (await cookies()).set('username', name);
   redirect(`/main`)
 }

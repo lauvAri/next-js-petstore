@@ -3,6 +3,9 @@
 ![product](https://github.com/lauvAri/next-js-petstore/blob/main/resource/product.png)
 ![category](https://github.com/lauvAri/next-js-petstore/blob/main/resource/category.png)
 ![item](https://github.com/lauvAri/next-js-petstore/blob/main/resource/item.png)
+![search](https://github.com/lauvAri/next-js-petstore/blob/main/resource/search.jpg)
+![search-card](https://github.com/lauvAri/next-js-petstore/blob/main/resource/search-card.jpg)
+![search-card-small](https://github.com/lauvAri/next-js-petstore/blob/main/resource/search-card-small.jpg)
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 

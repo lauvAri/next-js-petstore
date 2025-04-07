@@ -1,33 +1,44 @@
+"use client";
 import Footer from "@/app/common/footer";
 import Header from "@/app/common/header";
-import { springBoot } from "@/app/config";
+import { springBoot, backendUrl } from "@/app/config";
 import { parseDescription } from "@/app/utils";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 
-export default async function Search({ params }: {
-    params: Promise<{ keyword: string }>
-}) {
-    const keyword = (await params).keyword;
-    const { suggestion: productList } = await getData(keyword);
-    console.log(productList);
+export default function Search() {
+    const params = useParams();
+    const keyword = params.keyword as string;
+    const [productList, setProductList] = useState<Product[]>([]);
+    useEffect(()=> {
+        fetch(`${backendUrl}/catalog/search/${keyword}`)
+        .then(res => res.json())
+        .then(nextData => {
+            setProductList(nextData);
+        }).catch(err=> {
+          console.error(err);
+        })
+    }, [keyword]);
+    
     return (
         <div className="flex flex-col h-screen">
-            <Header></Header>
+            <Header />
             <div className="flex-1 self-center mt-4
-             grid grid-cols-2 gap-2 justify-items-center
+             grid md:grid-cols-2 sm:grid-cols-1 gap-2 justify-items-center
              auto-rows-min
              w-fit overflow-y-auto">
                 {
                     productList.map((item: Product) => (
                         <div key={item.productId}
-                            className="bg-lime-50 w-fit p-4 border-2 border-black rounded-2xl
+                            className="bg-orange-200 w-fit p-4 border-4 border-rose-400 rounded-2xl
                             flex flex-row gap-2 items-center justify-center
                             h-48">
-                            <img src={"/" + parseDescription(item.description).image} alt="img" />
+                            <img src={`${backendUrl}` + parseDescription(item.description).image} alt="img" width="60"/>
                             <div className="w-60">
                                 <p className="text-xl font-bold">{item.name}</p>
-                                <p className="underline text-blue-500">
+                                <p className="underline text-rose-500">
                                     <Link href={`/product/${item.productId}`}>{item.productId}</Link>
                                 </p>
                                 <p>{item.categoryId}</p>
@@ -38,7 +49,7 @@ export default async function Search({ params }: {
                     ))
                 }
             </div>
-            <Footer></Footer>
+            <Footer />
         </div>
     )
 }
@@ -48,10 +59,4 @@ type Product = {
     name: string,
     categoryId: string,
     description: string,
-}
-
-async function getData(keyword: string) {
-    const res = await fetch(`${springBoot}/api/search?keyword=${keyword}`)
-    if (!res.ok) throw new Error("获取数据失败")
-    return res.json();
 }

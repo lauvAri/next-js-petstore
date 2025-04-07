@@ -1,7 +1,18 @@
 "use client"
 import { CarouselDemo } from "@/app/main/carousel"
 import Link from "next/link"
+import { useEffect } from "react";
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light.css';
+import 'tippy.js/animations/scale.css';
 export default function Hero() {
+    useEffect(()=>{
+        tippy('[data-tippy-content]', {
+          theme: 'light',
+          animation: 'scale',
+        });
+    }, []);
     return (
         <div className="flex-1 flex gap-30 p-10 m-10">
             <div className="flex-1 flex flex-col gap-5 bg-emerald-200 p-10 rounded-e-full items-start shadow-2xl">
@@ -30,27 +41,27 @@ export default function Hero() {
                 <map id="estoremap" name="estoremap">
                     <Link href="/category/birds">
                         <area alt="Birds" coords="72,2,280,250"
-                            shape="RECT" />
+                            shape="RECT" data-tippy-content="Birds" />
                     </Link>
                     <Link href="/category/fish">
                         <area alt="Fish" coords="2,180,72,250"
-                            shape="RECT" />
+                            shape="RECT" data-tippy-content="Fish"/>
                     </Link>
                     <Link href="/category/dogs">
                         <area alt="Dogs" coords="60,250,130,320"
-                            shape="RECT" />
+                            shape="RECT" data-tippy-content="Dogs" />
                     </Link>
                     <Link href="/category/reptiles">
                         <area alt="Reptiles" coords="140,270,210,340"
-                            shape="RECT" />
+                            shape="RECT" data-tippy-content="Reptiles"/>
                     </Link>
                     <Link href="/category/cats">
                         <area alt="Cats" coords="225,240,295,310"
-                            shape="RECT" />
+                            shape="RECT" data-tippy-content="Cats"/>
                     </Link>
                     <Link href="/category/birds">
                         <area alt="Birds" coords="280,180,350,250"
-                        shape="RECT" />
+                        shape="RECT" data-tippy-content="Birds"/>
                     </Link>
                 </map>
                 <img height={355} src="/images/splash.gif" useMap="#estoremap" width={350} />

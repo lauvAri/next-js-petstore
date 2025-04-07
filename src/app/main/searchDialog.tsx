@@ -4,24 +4,27 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle , DialogTrigger} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Didact_Gothic } from "next/font/google";
-import { springBoot } from "../config";
+import { springBoot, backendUrl } from "../config";
+import { useRouter } from "next/navigation";
 
 export function SearchDialog() {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestion, setSuggestion] = useState([]);
+  const router = useRouter();
 
   const handleSearch = async(keyword:string) => {
-    const resp = await fetch(`${springBoot}/api/search?keyword=${keyword}`);
+    const resp = await fetch(`${backendUrl}/catalog/search/${keyword}`);
     let data;
     if (resp.ok) {
       data = await resp.json();
     }
-    const { suggestion:nextSuggestion } = data;
+    const nextSuggestion = data;
     setSuggestion(nextSuggestion);
   };
   const checkSearchPage = (keyword:string) => {
-    window.location.href = `/search/${encodeURIComponent(keyword)}`;
+    if (keyword && keyword.length > 0) {
+      router.push(`/search/${encodeURIComponent(keyword)}`);
+    }
   }
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -29,13 +32,13 @@ export function SearchDialog() {
     }
   }
   function showSuggestion(suggestion: Product[]) { 
-    if (searchTerm.length > 0 && suggestion.length > 0) {
+    if (searchTerm.length > 0 && suggestion && suggestion.length > 0) {
       return suggestion.map((item: Product) => (
                     <li
                        className="cursor-pointer hover:bg-yellow-300 p-2"
                        key={item.productId}
                       onClick={() => { 
-                        window.location.href = `/product/${item.productId}`
+                        router.push(`/product/${item.productId}`)
                       }}>{item.name}</li>
                   ))
     } else {

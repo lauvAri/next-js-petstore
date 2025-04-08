@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Cookies from 'js-cookie';
 import { useEffect, useState } from "react";
+import { backendUrl } from "../config";
 
 export default function Header() {
 
@@ -17,10 +18,20 @@ export default function Header() {
       setUsername(username);
     }, []);
 
-    const handleSignOut = () => {
+    const handleSignOut = async () => {
+      await fetch(`${backendUrl}/api/v1/auth/tokens/current`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${Cookies.get('token')}`,
+        },
+      }).then(res => res.text()).then(data => {console.log(data)}).catch(error => {
+        console.error(error ,"服务器发生错误");
+        alert('服务器错误');
+      });
       Cookies.remove('username');
       Cookies.remove('token');
       console.log('removed the username from cookie: ', Cookies.get('username'));
+      
       setUsername(undefined);
       router.push('/login');
     }

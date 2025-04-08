@@ -2,8 +2,10 @@
 
 import { useRef } from "react";
 import { springBoot } from "../../config";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+    const router = useRouter();
     async function handleSubmit(e: any) {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -12,13 +14,26 @@ export default function Register() {
             password: formData.get("password"),
             email: formData.get("email"),
             favouriteCategoryId: formData.get("favouriteCategoryId"),
+
+            "firstName" : "xxx",
+            "lastName" : "xxx",
+            "phone" : "xxx",
+            "address1" : "xxx",
+            "address2" : "xxx",
+            "city" : "xxx",
+            "zip" : "xxx",
+            "state" : "xxx",
+            "country" : "xxx",
+            "languagePreference" : "xxx",
+            "listOption" : true,
+            "bannerOption" : false
         }
 
         if (data.password !== formData.get("repeat-password")) {
             window.alert("两次密码不一致");
             return;
         }
-        const resp = await fetch(`${springBoot}/api/register`, {
+        const resp = await fetch(`${springBoot}/api/v1/account`, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {
@@ -27,8 +42,7 @@ export default function Register() {
         })
         if (resp.ok) {
             window.alert("注册成功");
-            window.location.href = "/login";
-            return;
+            router.push('/login');
         } else {
             window.alert("注册失败");
         }

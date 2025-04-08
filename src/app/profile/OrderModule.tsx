@@ -5,6 +5,7 @@ import { backendUrl } from "@/app/config";
 import Cookies from "js-cookie";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // Define the type for the order item
 interface OrderItem {
@@ -23,6 +24,12 @@ export default function OrdersModule() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [order, setOrderData] = useState({
+    orderId: "",
+    reason: "",
+    description: "",
+    image:""
+  });
 
   // Fetch order data
   useEffect(() => {
@@ -79,54 +86,129 @@ export default function OrdersModule() {
   if (error) return <p className="text-red-500">{error}</p>;
   if (!orders.length) return <p>No orders available.</p>;
 
+  // 退货申请
+  const handleCancelSubmit = async () => {
+  
+    const currentToken = Cookies.get("token");
+    if (!currentToken) {
+      alert("Not logged in, please log in first");
+      return;
+    }
+  
+    try {
+      const postResp = await fetch(`${backendUrl}/api/v1/account/myOrders/cancel`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${currentToken}`
+        },
+        body: JSON.stringify({
+          orderId: order.orderId,
+          reason: order.reason,
+          description: order.description,
+          image: order.image
+        })
+      });
+  
+      if (!postResp.ok) {
+        const msg = await postResp.text();
+        alert("Return request failed:" + msg);
+        return;
+      }
+    } catch (error) {
+      console.error("Return request failed:", error);
+      alert("Return request failed, please try again later!");
+    }
+  };
+
   return (
     <div className="grid gap-4">
-      {orders.map((order) => (
-        <Card key={order.id}>
+      {orders.map((orderItem) => (
+        <Card key={orderItem.id}>
           <CardContent className="p-4">
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-bold">Order ID: {order.id}</h3>
-                  {order.date && (
-                    <p className="text-sm text-gray-500">Date: {order.date}</p>
+                  <h3 className="font-bold">Order ID: {orderItem.id}</h3>
+                  {orderItem.date && (
+                    <p className="text-sm text-gray-500">Date: {orderItem.date}</p>
                   )}
                 </div>
-                <span className={getStatusStyle(order.status)}>
-                  {order.status}
+                <span className={getStatusStyle(orderItem.status)}>
+                  {orderItem.status}
                 </span>
               </div>
 
-              {order.items && order.items.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="font-medium mb-2">Order Items</h4>
-                  <div className="space-y-2">
-                    {order.items.map((item, index) => (
-                      <div key={index} className="flex justify-between">
-                        <span>
-                          {item.name} x {item.quantity}
-                        </span>
-                        <span>¥{item.price.toFixed(2)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {order.total && (
+              {orderItem.items?.length && orderItem.items.length > 0 && (
+              <div className="mt-4">
+              <h4 className="font-medium mb-2">Order Items</h4>
+                 <div className="space-y-2">
+                   {orderItem.items.map((item, index) => (
+                <div key={index} className="flex justify-between">
+               <span>
+                   {item.name} x {item.quantity}
+                </span>
+                <span>¥{item.price.toFixed(2)}</span>
+              </div>
+               ))}
+             </div>
+            </div>
+            )}
+              {orderItem.total && (
                 <div className="flex justify-between font-bold mt-2">
                   <span>Total</span>
-                  <span>¥{order.total.toFixed(2)}</span>
+                  <span>¥{orderItem.total.toFixed(2)}</span>
                 </div>
               )}
-
+  
               <div className="flex gap-2 mt-4">
                 <Button>View Details</Button>
-                {["pending"].includes(order.status.toLowerCase()) && (
+  
+                {orderItem.status.toLowerCase() === "pending" && (
                   <Button variant="outline">Cancel Order</Button>
                 )}
-                {["completed"].includes(order.status.toLowerCase()) && (
-                  <Button variant="outline">Request Return</Button>
+  
+                {orderItem.status.toLowerCase() === "completed" && (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        setOrderData({
+                          ...order,
+                          orderId: orderItem.id,
+                        })
+                      }
+                    >
+                      Request Return
+                    </Button>
+  
+                    {order.orderId === orderItem.id && (
+                      <div className="grid gap-2 mt-4 p-4 border rounded-md bg-gray-50">
+                        <Input
+                          placeholder="Return Reason"
+                          value={order.reason}
+                          onChange={(e) =>
+                            setOrderData({ ...order, reason: e.target.value })
+                          }
+                        />
+                        <textarea
+                          placeholder="Return Description"
+                          value={order.description}
+                          onChange={(e) =>
+                            setOrderData({ ...order, description: e.target.value })
+                          }
+                        />
+                        <Input
+                          placeholder="Image URL (optional)"
+                          value={order.image}
+                          onChange={(e) =>
+                            setOrderData({ ...order, image: e.target.value })
+                          }
+                        />
+                        <Button onClick={handleCancelSubmit}>Submit Return Request</Button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

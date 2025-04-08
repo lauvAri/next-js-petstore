@@ -1,6 +1,6 @@
 "use client"
 
-import { springBoot } from "@/app/config";
+import { springBoot, backendUrl } from "@/app/config";
 import { useRouter } from "next/navigation";
 import GiteeIcon from "../GiteeIcon";
 import Cookies from "js-cookie";
@@ -19,20 +19,26 @@ export default function LogIn() {
             username: username,
             password: password,
         }
-        const resp = await fetch(`${springBoot}/api/login`, {
+        const resp = await fetch(`${backendUrl}/api/v1/auth/login`, {
             method: "POST",
             body: JSON.stringify(data),
             headers: {
                 "Content-Type": "application/json",
             },
-            credentials: 'include'  // 确保携带Cookie
         })
         if (resp.ok) {
-           Cookies.set("username",username as string);
+            const data = await resp.text();
+            if (data === 'Invalid username or password') {
+              alert('Invalid username or password');
+              router.push('/login');
+              return;
+            }
+            Cookies.set("token", data);
+            Cookies.set("username",username as string);
             router.push(`/main`);
             return;
         } else {
-             window.alert("用户名或密码错误");
+            window.alert("用户名或密码错误");
         }
 
     }

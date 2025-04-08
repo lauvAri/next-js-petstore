@@ -30,12 +30,12 @@ export default function LogsModule() {
 
         const response = await fetch(`${backendUrl}/api/v1/account/me/myJournal`, {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: { 
+            Authorization: `Bearer ${token}` 
+          }, // 移除Content-Type
+          credentials: "include" // 新增凭证配置
         });
-
+        
         if (!response.ok) {
           const msg = await response.text();
           throw new Error(msg);

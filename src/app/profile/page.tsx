@@ -20,6 +20,7 @@ interface UserInfo {
   address2?: string;
   city?: string;
   zip?: string;
+  state?: string;
   country?: string;
   langPref?: string;
   favCategory?: string;
@@ -31,57 +32,54 @@ export default function Profile() {
   const [activeModule, setActiveModule] = useState("info");
   // Simulate user information data
   const [userInfo, setUserInfo] = useState<UserInfo | null>({
-    firstName: "X",
-    lastName: "X",
-    email: "xxx@example.com",
-    phone: "xxxxxxxxx",
-    address1: "xxxxxxx",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address1: "",
     address2: "",
-    city: "xx",
-    zip: "xxxxxx",
-    country: "xx",
-    langPref: "xx",
-    favCategory: "xxx",
-    mylistOpt: true,
+    city: "",
+    zip: "",
+    state: "",
+    country: "",
+    langPref: "",
+    favCategory: "",
+    mylistOpt: false,
     bannerOpt: false
   });
 
   // API call to display user information
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = Cookies.get("token"); // Get token from Cookie
-        if (!token) {
-          alert("Not logged in or token does not exist, please log in again.");
-          return;
-        }
+useEffect(() => {
+  const fetchUserInfo = async () => {
+    const token = Cookies.get("token");
+    if (!token) {
+      alert("请先登录");
+      return;
+    }
 
-        const response = await fetch(`${backendUrl}/api/v1/account/me`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Fetched user info:", data);
-          setUserInfo(data); // Set the state with fetched data
-        } else if (response.status === 401) {
-          alert("Unauthorized or login has expired, please log in again.");
-        } else {
-          alert("Failed to fetch user information.");
-          console.error("Error response:", await response.text());
-        }
-      } catch (error) {
-        console.error("Request error:", error);
-        alert("Network error, please try again later.");
+    fetch(`${backendUrl}/api/v1/account/me`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
-    };
-
-    fetchUserInfo();
-  }, []);
+    })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("获取用户信息失败");
+      }
+    })
+    .then(data => {
+      setUserInfo(data);
+    })
+    .catch(error => {
+      console.error("获取用户信息失败", error);
+      alert("获取用户信息失败，请稍后重试");
+    });
+  };
+  
+  fetchUserInfo();
+}, []);
 
   const renderModule = () => {
     switch (activeModule) {
@@ -96,10 +94,11 @@ export default function Profile() {
     }
   };
 
+ 
   return (
-    <>
+    <div className="flex flex-col h-screen">
       <Header />
-      <div className="flex flex-col items-center py-12 bg-gray-100 min-h-screen">
+      <div className="flex-grow flex flex-col items-center py-12 bg-gray-100">
         <div className="p-8 bg-white shadow-md rounded-md w-full max-w-4xl">
           <div className="flex justify-center gap-4 mb-8">
             <button
@@ -137,6 +136,6 @@ export default function Profile() {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 }

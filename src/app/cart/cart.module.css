@@ -24,6 +24,15 @@
     margin-bottom: 20px;
 }
 
+.empty
+{
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .show
 {
     font-family: "Microsoft Yahei", "Trebuchet MS", Helvetica, sans-serif;

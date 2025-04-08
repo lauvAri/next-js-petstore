@@ -7,6 +7,7 @@
 ![search-card](https://github.com/lauvAri/next-js-petstore/blob/main/resource/search-card.jpg)
 ![search-card-small](https://github.com/lauvAri/next-js-petstore/blob/main/resource/search-card-small.jpg)
 ![not-in-stock](https://github.com/lauvAri/next-js-petstore/blob/main/resource/not-in-stock.jpg)
+![black-list](https://github.com/lauvAri/next-js-petstore/blob/main/resource/black-list.png)
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 

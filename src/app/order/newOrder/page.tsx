@@ -53,6 +53,7 @@ export default function OrderPage() {
   const [shipToDifferentAddress, setShipToDifferentAddress] = useState(false); // 新增状态
   const [hoveredAddress, setHoveredAddress] = useState<Address | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [mainAddress, setMainAddress] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -131,6 +132,7 @@ export default function OrderPage() {
       const data = await response.json();
       if (data.status === 0) {
         alert("Set main address successfully!");
+        setMainAddress(addressId);
         setAddresses((prevAddresses) => {
           const updatedAddresses = [...prevAddresses];
           const selectedAddress = updatedAddresses.find((address) => address.addressId === addressId);
@@ -380,7 +382,10 @@ export default function OrderPage() {
                     setHoveredAddress(address);
                   }}
                   onMouseLeave={() => setHoveredAddress(null)}>
-                  <h4>{address.addressId}</h4>
+                  <h4>
+                    {address.addressId}
+                    {address.addressId === mainAddress && <span className={styles.mainBadge}> (Main)</span>}
+                  </h4>
                   <span>
                     <p>
                       {address.address1} {address.address2}

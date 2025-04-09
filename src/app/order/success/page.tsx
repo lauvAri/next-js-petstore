@@ -73,6 +73,7 @@ export default function SuccessPage() {
           const result = await response.json();
           if (result.status === 0) {
             setOrder(result.data);
+
           } else {
             alert(result.message || "获取订单详情失败");
             router.push("/");

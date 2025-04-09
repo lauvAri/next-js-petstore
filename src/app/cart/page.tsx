@@ -49,7 +49,6 @@ interface FavoriteItem {
 export default function Cart() {
     const [cartData, setCartData] = useState<CartData | null>(null);
     const [favoriteList, setFavoriteList] = useState<FavoriteItem[]>([]);  // 新增状态来存储喜爱商品
-    const [quantity, setQuantity] = useState<{ [key: string]: number }>({});
     const inputRef = useRef<HTMLInputElement>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const router = useRouter();
